@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@polkadot/api": "^8.11.1",
+    "@polkadot/api-contract": "^8.11.1",
+    "@polkadot/extension-dapp": "^0.44.1"
+  }
+}
