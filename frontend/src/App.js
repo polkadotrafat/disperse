@@ -1,4 +1,4 @@
-import React, {useState,useEffect, useCallback} from 'react'; 
+import React, {useState,useEffect, useCallback} from "react"; 
 import {
   BrowserRouter,
   Routes,
@@ -9,21 +9,30 @@ import {
   web3Enable, 
   web3AccountsSubscribe, 
   web3FromSource
-} from '@polkadot/extension-dapp';
+} from "@polkadot/extension-dapp";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { ContractPromise } from "@polkadot/api-contract";
+import disperseABI from "./contracts/disperse.json";
+import {DISPERSE_ADDRESS,RPC_URL} from "./assets/constants";
 
 
 import Toolbar from './components/Toolbar';
 import Home from './containers/Home';
 import Native from './containers/Native';
 import Tokens from './containers/Tokens';
+import { Form } from "react-bootstrap";
 
 
 function App() {
   const [allAccounts,setAllAccounts] = useState();
   const [activeAccount, setActiveAccount] = useState(null);
+  const [DisperseContract,setDisperseContract] = useState(null);
+  const [signer,setSigner] = useState(null);
 
-  console.log(allAccounts);
-  console.log("active: ",activeAccount);
+  //console.log(allAccounts);
+  //console.log("active: ",activeAccount.meta);
+  //console.log(DisperseContract);
+  //console.log(signer);
 
   const walletInit = useCallback ( async () => {
     const allInjected = await web3Enable('disperse');
@@ -55,6 +64,31 @@ function App() {
       setActiveAccount(allAccounts[0]);
     }
   },[allAccounts])
+
+  const setUp = async () => {
+    if (activeAccount) {
+      const wsProvider = new WsProvider(RPC_URL);
+      const api = await ApiPromise.create({ provider: wsProvider });
+      const contract2 = new ContractPromise(api, disperseABI, DISPERSE_ADDRESS);
+      setDisperseContract(contract2);
+      console.log("activeAccount ::::",activeAccount);
+      const accountSigner = await web3FromSource(activeAccount.meta.source).then(
+        (res) => res.signer
+      );
+      setSigner(accountSigner);
+    }
+  }
+
+  useEffect(() => {
+    setUp();
+  },[activeAccount])
+
+  const onHandleSelect = (e) => {
+    e.preventDefault();
+    console.log("ETAR",e.target.value);
+    setActiveAccount(allAccounts[e.target.value]);
+  }
+
   return (
     <BrowserRouter>
       <Toolbar />
@@ -62,10 +96,19 @@ function App() {
         <Route path="/" element={<Home 
         activeAccount={activeAccount} 
         allAccounts={allAccounts}
+        onHandleSelect={onHandleSelect}
         />}
          />
-        <Route path="/tokens" element={<Tokens activeAccount={activeAccount} />} />
-        <Route path="/native" element={<Native activeAccount={activeAccount} />} />
+        <Route path="/tokens" element={<Tokens 
+        activeAccount={activeAccount} 
+        signer={signer}
+        disperseContract={DisperseContract}
+        />} />
+        <Route path="/native" element={<Native 
+        activeAccount={activeAccount}
+        signer={signer}
+        disperseContract={DisperseContract}
+         />} />
       </Routes>
     </BrowserRouter>
   );

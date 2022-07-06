@@ -1,11 +1,117 @@
-import React from "react";
+import React,{useState} from "react";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { ContractPromise } from "@polkadot/api-contract";
 import {Container,Button,Row,Col,Form} from 'react-bootstrap';
+import tokenABI from "../contracts/token.json";
+import {DISPERSE_ADDRESS,RPC_URL} from "../assets/constants";
+import BigNumber from "bignumber.js";
 
-const Tokens = () => {
+const TOKEN_ADDRESS = "5CY25VJmUSPBxVpViQqx6PXrxPNdYhbhP6v1Ew2njLbHc4uY";
 
-    const handleClick = async (e) => {
-        e.preventDefault();
+const Tokens = (props) => {
+    const [textValue, setTextValue] = useState('');
+    const [tokenAddress,setTokenAddress] = useState('');
+    const [disableDisperse,setDisableDisperse] = useState(true);
+    const [disableApprove,setDisableApprove] = useState(false);
+    const [addressArray,setAddressArray] = useState([]);
+    const [amountArray, setAmountArray] = useState([]);
+
+    const ph = "Address1 Amount1\n"+
+    "Address2,Amount2\n"+
+    "Address3:Amount3";
+
+    const handleChange = (e) => {
+        setTextValue(e.target.value);
     }
+
+    const handleInput = (e) => {
+        setTokenAddress(e.target.value);
+    }
+
+    const handleApprove = async () => {
+        let tempArray = textValue.valueOf().split(/[\s,;:\t\r\n]+/);
+
+        const wsProvider = new WsProvider(RPC_URL);
+        const api = await ApiPromise.create({ provider: wsProvider });
+        const tokenContract = new ContractPromise(api, tokenABI, TOKEN_ADDRESS);
+
+        let oddArray = tempArray.filter((v,i) => i%2);
+        let evenArray = tempArray.filter((v,i) => !(i%2));
+
+        let addArray = [];
+        let amtArray = [];
+        let total = 0.0;
+
+        const cd = await api.registry.chainDecimals;
+        console.log("chain decimals",cd);
+        const UNIT = Math.pow(10,parseInt(cd.toString()));
+
+        for (let i = 0; i < evenArray.length; ++i) {
+            if (!isNaN(oddArray[i]) && (parseFloat(oddArray[i]) > 0.0 )) {
+                addArray.push(evenArray[i].trim());
+                amtArray.push((oddArray[i]*UNIT).toString());
+                total += parseFloat(oddArray[i]);
+            }
+        }
+
+        setAddressArray(addArray);
+        setAmountArray(amtArray);
+
+        console.log(total);
+
+        let allowance = new BigNumber(total);
+        
+        allowance = total * UNIT;
+        console.log(allowance.toString());
+        console.log(tokenAddress);
+        console.log(addArray);
+        console.log(amtArray);
+
+        const gasLimit = -1;
+
+        console.log(tokenContract);
+
+        await tokenContract.tx["psp22::approve"]({gasLimit},DISPERSE_ADDRESS,allowance)
+        .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
+            if (result.status.isInBlock) {
+                console.log(`Completed at block hash #${result.isInBlock.toString()}`);
+            } else if (result.status.isFinalized) {
+                console.log(`Current status: ${result.type}`);
+            }
+            setDisableDisperse(false);
+        }).catch((error) => {
+            console.log(':( transaction failed', error);
+        });
+
+    }
+
+    const handleDisperse = async () => {
+        setDisableApprove(true);
+
+        const gasLimit = -1;
+
+        if ((addressArray.length === amountArray.length) && addressArray.length > 0) {
+            await props.disperseContract.tx.disperseToken({gasLimit},TOKEN_ADDRESS,addressArray,amountArray)
+            .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
+                if (result.status.isInBlock) {
+                    console.log(`Completed at block hash #${result.isInBlock.toString()}`);
+                } else if (result.status.isFinalized) {
+                    console.log(`Current status: ${result.type}`);
+                }
+            }).catch((error) => {
+                console.log(':( transaction failed', error);
+            });
+        } else {
+            alert("Please enter at least one valid transaction");
+        }
+
+        setAddressArray([]);
+        setAmountArray([]);
+        setDisableApprove(false);
+        setDisableDisperse(true);
+    }
+    
+
     return (
         <Container>
             <Row>
@@ -18,15 +124,16 @@ const Tokens = () => {
                             <Form.Label>
                             Please enter Contract Address
                             </Form.Label>
-                            <Form.Control type="text" placeholder="ERC20/PSP22 Contract Address" />
+                            <Form.Control onChange={handleInput} type="text" placeholder="ERC20/PSP22 Contract Address" />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                             <Form.Label>
                             Please enter each address in a new line followed by a separator (comma,colon or blank space) and then the amount.
                             </Form.Label>
-                            <Form.Control as="textarea" />
+                            <Form.Control onChange={handleChange} placeholder={ph} as="textarea" />
                             <br />
-                            <Button variant="primary" onClick={handleClick}>Disperse Tokens</Button>
+                            <Button variant="primary" onClick={handleApprove}>Approve Tokens</Button>{'     '}
+                            <Button variant="primary" onClick={handleDisperse}>Disperse Tokens</Button>{'     '}
                         </Form.Group>
                     </Form>
                 </Col>

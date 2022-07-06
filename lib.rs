@@ -4,8 +4,8 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod disperse {
-    use openbrush::contracts::psp22::*;
     use openbrush::contracts::traits::psp22::PSP22Ref;
+    use openbrush::contracts::traits::errors::PSP22Error;
     use ink_prelude::vec::Vec;
     use ink_storage::{
         traits::SpreadAllocate
@@ -14,7 +14,6 @@ mod disperse {
     #[derive(Debug,PartialEq,Eq,scale::Encode,scale::Decode)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum Error {
-        PSP22Error(PSP22Error),
         //Return if the no money is sent to disperse
         ZeroBalance,
         // Input Mismatch
@@ -23,7 +22,25 @@ mod disperse {
         InsufficientBalance,
         // Token Transfer failed
         TransferFailed,
+        PSP22Error(PSP22Error),
     }
+
+    #[ink(event)]
+    pub struct CurrencyDispersed {
+        #[ink(topic)]
+        from: Option<AccountId>,
+        value: Balance,
+    }
+
+    #[ink(event)]
+    pub struct TokensDispersed {
+        #[ink(topic)]
+        from: Option<AccountId>,
+        #[ink(topic)]
+        token: Option<AccountId>,
+        value: Balance,
+    }
+
 
     #[ink(storage)]
     #[derive(SpreadAllocate)]
@@ -65,6 +82,11 @@ mod disperse {
 
             self.settle_balance();
 
+            Self::env().emit_event(CurrencyDispersed{
+                from: Some(self.env().caller()),
+                value: sum,
+            });
+
             Ok(())
         }
 
@@ -84,15 +106,21 @@ mod disperse {
                 total = total + values[i];
             }
 
-            PSP22Ref::transfer_from_builder(&token_address,caller,contract_address,total,Vec::<u8>::new())
+            PSP22Ref::transfer_from_builder(&token_address,caller,contract_address,total.clone(),Vec::<u8>::new())
             .call_flags(ink_env::CallFlags::default().set_allow_reentry(true))
             .fire()
-            .unwrap();
+            .unwrap().ok();
 
 
             for i in 0..transactions {
                 PSP22Ref::transfer(&token_address,addresses[i].clone(), values[i].clone(),Vec::<u8>::new()).ok();
             }
+
+            Self::env().emit_event(TokensDispersed{
+                from: Some(self.env().caller()),
+                token: Some(token_address),
+                value: total,
+            });
 
             Ok(())
         }

@@ -22,15 +22,14 @@ const Home = (props) => {
         check_account();
     },[props.activeAccount])
 
-    const check_all = async() => {
-        if (props.allAccounts.length > 0) {
-            setSChoices([]);
-            props.allAccounts.map(accounts => setSChoices(sChoices => [...sChoices,
-            {
-                name: accounts.address,
-                value: accounts.address,
-            }]))
-            //console.log("length",props.allAccounts.length);
+    const check_all = () => {
+        if (props?.allAccounts?.length > 0) {
+            let temp = [];
+            for ( let i = 0; i < props.allAccounts.length; ++i) {
+                let obj = {value: i, name: props.allAccounts[i].address};
+                temp.push(obj);
+            }
+            setSChoices(temp);
         }
     }
 
@@ -56,8 +55,10 @@ const Home = (props) => {
                             <Card.Text>
                                 {active}
                             </Card.Text>
-                            <Form.Select>
-                                <option>Select Another Account</option>
+                            <Form.Label>
+                                Select Another Account
+                            </Form.Label>
+                            <Form.Select onChange={props.onHandleSelect}>
                                 {sChoices.map(choice => (<option value={choice.value}>{choice.name}</option>))}
                             </Form.Select>
                             <br />
