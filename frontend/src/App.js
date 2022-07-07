@@ -29,7 +29,7 @@ function App() {
   const [DisperseContract,setDisperseContract] = useState(null);
   const [signer,setSigner] = useState(null);
 
-  //console.log(allAccounts);
+  console.log(allAccounts);
   //console.log("active: ",activeAccount.meta);
   //console.log(DisperseContract);
   //console.log(signer);

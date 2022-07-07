@@ -2,7 +2,7 @@ import React,{useState} from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import {Container,Button,Row,Col,Form} from 'react-bootstrap';
 import {RPC_URL} from "../assets/constants";
-import BigNumber from "bignumber.js";
+import {BigNumber} from "bignumber.js";
 
 const Native = (props) => {
     const [textValue, setTextValue] = useState('');
@@ -32,14 +32,16 @@ const Native = (props) => {
         for (let i = 0; i < evenArray.length; ++i) {
             if (!isNaN(oddArray[i]) && (parseFloat(oddArray[i]) > 0.0 )) {
                 addArray.push(evenArray[i].trim());
-                amtArray.push((oddArray[i]*UNIT).toString());
+                let t3 = new BigNumber(oddArray[i]);
+                amtArray.push((t3.multipliedBy(UNIT)).toFixed());
                 total += parseFloat(oddArray[i]);
             }
         }
 
-        let t2 = new BigNumber(total);;
+        let t2 = new BigNumber(total);
 
-        let value = total * UNIT;
+        let value = (t2.multipliedBy(UNIT)).toString();
+        console.log(value);
 
         //let ADDR = props.activeAccount.address;
 

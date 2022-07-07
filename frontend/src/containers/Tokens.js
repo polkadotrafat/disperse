@@ -6,8 +6,6 @@ import tokenABI from "../contracts/token.json";
 import {DISPERSE_ADDRESS,RPC_URL} from "../assets/constants";
 import BigNumber from "bignumber.js";
 
-const TOKEN_ADDRESS = "5CY25VJmUSPBxVpViQqx6PXrxPNdYhbhP6v1Ew2njLbHc4uY";
-
 const Tokens = (props) => {
     const [textValue, setTextValue] = useState('');
     const [tokenAddress,setTokenAddress] = useState('');
@@ -33,7 +31,7 @@ const Tokens = (props) => {
 
         const wsProvider = new WsProvider(RPC_URL);
         const api = await ApiPromise.create({ provider: wsProvider });
-        const tokenContract = new ContractPromise(api, tokenABI, TOKEN_ADDRESS);
+        const tokenContract = new ContractPromise(api, tokenABI, tokenAddress);
 
         let oddArray = tempArray.filter((v,i) => i%2);
         let evenArray = tempArray.filter((v,i) => !(i%2));
@@ -49,7 +47,8 @@ const Tokens = (props) => {
         for (let i = 0; i < evenArray.length; ++i) {
             if (!isNaN(oddArray[i]) && (parseFloat(oddArray[i]) > 0.0 )) {
                 addArray.push(evenArray[i].trim());
-                amtArray.push((oddArray[i]*UNIT).toString());
+                let t3 = new BigNumber(oddArray[i]);
+                amtArray.push((t3.multipliedBy(UNIT)).toFixed());
                 total += parseFloat(oddArray[i]);
             }
         }
@@ -59,10 +58,10 @@ const Tokens = (props) => {
 
         console.log(total);
 
-        let allowance = new BigNumber(total);
+        let t2 = new BigNumber(total);
         
-        allowance = total * UNIT;
-        console.log(allowance.toString());
+        let allowance = (t2.multipliedBy(UNIT)).toFixed();
+        console.log(allowance);
         console.log(tokenAddress);
         console.log(addArray);
         console.log(amtArray);
@@ -77,8 +76,9 @@ const Tokens = (props) => {
                 console.log(`Completed at block hash #${result.isInBlock.toString()}`);
             } else if (result.status.isFinalized) {
                 console.log(`Current status: ${result.type}`);
+                setDisableDisperse(false);
             }
-            setDisableDisperse(false);
+            
         }).catch((error) => {
             console.log(':( transaction failed', error);
         });
@@ -91,12 +91,14 @@ const Tokens = (props) => {
         const gasLimit = -1;
 
         if ((addressArray.length === amountArray.length) && addressArray.length > 0) {
-            await props.disperseContract.tx.disperseToken({gasLimit},TOKEN_ADDRESS,addressArray,amountArray)
+            await props.disperseContract.tx.disperseToken({gasLimit},tokenAddress,addressArray,amountArray)
             .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
                 if (result.status.isInBlock) {
                     console.log(`Completed at block hash #${result.isInBlock.toString()}`);
                 } else if (result.status.isFinalized) {
                     console.log(`Current status: ${result.type}`);
+                    setDisableApprove(false);
+                    setDisableDisperse(true);
                 }
             }).catch((error) => {
                 console.log(':( transaction failed', error);
@@ -107,8 +109,7 @@ const Tokens = (props) => {
 
         setAddressArray([]);
         setAmountArray([]);
-        setDisableApprove(false);
-        setDisableDisperse(true);
+    
     }
     
 
