@@ -1,4 +1,4 @@
-# Disperse DAPP Build Using Ink! Contract
+# Disperse DAPP Build Using Ink! and React
 
 Disperse DAPP is a batching protocol for both native currency and PSP22/ERC20 or equivalent tokens that can help reduce gas cost for multiple transfers by batching them in a single block.
 
