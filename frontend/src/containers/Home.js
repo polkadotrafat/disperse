@@ -53,7 +53,10 @@ const Home = (props) => {
                                 DISPERSE DAPP
                             </Card.Title>
                             <Card.Text>
-                                {active}
+                                Account : {active}
+                            </Card.Text>
+                            <Card.Text>
+                                Balance : {props.balance}
                             </Card.Text>
                             <Form.Label>
                                 Select Another Account

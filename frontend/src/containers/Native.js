@@ -61,6 +61,7 @@ const Native = (props) => {
         await props.disperseContract.tx.disperseCurrency({gasLimit,value},addArray,amtArray)
         .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
             if (result.status.isInBlock) {
+
               console.log('in a block');
             } else if (result.status.isFinalized) {
               console.log('finalized');

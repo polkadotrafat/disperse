@@ -13,6 +13,7 @@ const Tokens = (props) => {
     const [disableApprove,setDisableApprove] = useState(false);
     const [addressArray,setAddressArray] = useState([]);
     const [amountArray, setAmountArray] = useState([]);
+    const [displayMessage,setDisplayMessage] = useState(null)
 
     const ph = "Address1 Amount1\n"+
     "Address2,Amount2\n"+
@@ -73,8 +74,10 @@ const Tokens = (props) => {
         await tokenContract.tx["psp22::approve"]({gasLimit},DISPERSE_ADDRESS,allowance)
         .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
             if (result.status.isInBlock) {
+                setDisplayMessage("Transaction is In Block");
                 console.log(`Completed at block hash #${result.isInBlock.toString()}`);
             } else if (result.status.isFinalized) {
+                setDisplayMessage("Transaction is Finalized");
                 console.log(`Current status: ${result.type}`);
                 setDisableDisperse(false);
             }
@@ -87,6 +90,7 @@ const Tokens = (props) => {
 
     const handleDisperse = async () => {
         setDisableApprove(true);
+        setDisplayMessage("");
 
         const gasLimit = -1;
 
@@ -94,13 +98,16 @@ const Tokens = (props) => {
             await props.disperseContract.tx.disperseToken({gasLimit},tokenAddress,addressArray,amountArray)
             .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
                 if (result.status.isInBlock) {
+                    setDisplayMessage("Transaction is In Block");
                     console.log(`Completed at block hash #${result.isInBlock.toString()}`);
                 } else if (result.status.isFinalized) {
+                    setDisplayMessage("Transaction is Finalized");
                     console.log(`Current status: ${result.type}`);
                     setDisableApprove(false);
                     setDisableDisperse(true);
                 }
             }).catch((error) => {
+                setDisplayMessage("Transaction Failed");
                 console.log(':( transaction failed', error);
             });
         } else {
@@ -133,8 +140,13 @@ const Tokens = (props) => {
                             </Form.Label>
                             <Form.Control onChange={handleChange} placeholder={ph} as="textarea" />
                             <br />
-                            <Button variant="primary" onClick={handleApprove}>Approve Tokens</Button>{'     '}
-                            <Button variant="primary" onClick={handleDisperse}>Disperse Tokens</Button>{'     '}
+                            <Button variant="primary" onClick={handleApprove} disabled={disableApprove}>
+                                Approve Tokens</Button>{'     '}
+                            <Button variant="primary" onClick={handleDisperse} disabled={disableDisperse}>
+                                Disperse Tokens</Button>{'     '}
+                        </Form.Group>
+                        <Form.Group>
+                            {displayMessage}
                         </Form.Group>
                     </Form>
                 </Col>

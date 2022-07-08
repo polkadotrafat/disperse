@@ -14,6 +14,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { ContractPromise } from "@polkadot/api-contract";
 import disperseABI from "./contracts/disperse.json";
 import {DISPERSE_ADDRESS,RPC_URL} from "./assets/constants";
+import {BigNumber} from "bignumber.js";
 
 
 import Toolbar from './components/Toolbar';
@@ -27,6 +28,7 @@ function App() {
   const [allAccounts,setAllAccounts] = useState();
   const [activeAccount, setActiveAccount] = useState(null);
   const [DisperseContract,setDisperseContract] = useState(null);
+  const [accountBalance,setAccountBalance] = useState();
   const [signer,setSigner] = useState(null);
 
   console.log(allAccounts);
@@ -70,7 +72,13 @@ function App() {
       const wsProvider = new WsProvider(RPC_URL);
       const api = await ApiPromise.create({ provider: wsProvider });
       const contract2 = new ContractPromise(api, disperseABI, DISPERSE_ADDRESS);
+      const {data: balance, nonce} = await api.query.system.account(activeAccount.address);
+      const cd = await api.registry.chainDecimals;
+      let x = new BigNumber(balance.free);
+      let y = new BigNumber(10).exponentiatedBy(new BigNumber(cd));
+      let bal = (x.dividedBy(y)).toString();
       setDisperseContract(contract2);
+      setAccountBalance(bal);
       console.log("activeAccount ::::",activeAccount);
       const accountSigner = await web3FromSource(activeAccount.meta.source).then(
         (res) => res.signer
@@ -97,6 +105,7 @@ function App() {
         activeAccount={activeAccount} 
         allAccounts={allAccounts}
         onHandleSelect={onHandleSelect}
+        balance={accountBalance}
         />}
          />
         <Route path="/tokens" element={<Tokens 
@@ -108,6 +117,7 @@ function App() {
         activeAccount={activeAccount}
         signer={signer}
         disperseContract={DisperseContract}
+        balance={accountBalance}
          />} />
       </Routes>
     </BrowserRouter>
