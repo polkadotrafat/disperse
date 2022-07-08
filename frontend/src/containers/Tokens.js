@@ -42,7 +42,6 @@ const Tokens = (props) => {
         let total = 0.0;
 
         const cd = await api.registry.chainDecimals;
-        console.log("chain decimals",cd);
         const UNIT = Math.pow(10,parseInt(cd.toString()));
 
         for (let i = 0; i < evenArray.length; ++i) {
