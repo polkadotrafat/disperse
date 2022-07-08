@@ -8,7 +8,7 @@ Slides :
 
 Demo Video :             [ No Audio ]
 
-Contract Address : `````` [on Shibuya Testnet]
+Contract Address : ```XAPTQfpsddWDJ9kkkVBQjkchzHjpD9Bz4noneJmfBvTySC7``` [on Shibuya Testnet]
 
 MIT License
 
