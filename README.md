@@ -4,7 +4,7 @@ Disperse DAPP is a batching protocol for both native currency and PSP22/ERC20 or
 
 DAPP is live at https://famous-llama-2bd8e8.netlify.app
 
-Slides : 
+Slides : https://docs.google.com/presentation/d/1iMBasWGsGutQSdDwc1XhFPmtathxhBF25aJJAfUU9KI/edit?usp=sharing
 
 Demo Video :             [ No Audio ]
 
