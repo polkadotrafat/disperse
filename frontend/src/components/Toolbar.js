@@ -3,7 +3,6 @@ import {NavDropdown,Navbar,Nav,Button,Container} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 const Toolbar = () => {
-    const [activeItem,setActiveItem] = useState('DEX');
 
     return (
         <Navbar bg="info" expand="lg py-0">

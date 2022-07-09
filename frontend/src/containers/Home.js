@@ -1,6 +1,7 @@
 import React,{useState,useEffect,useCallback} from "react";
 import {Button, Card, Row, Col, Form} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import Front from "../components/Front";
 
 const Home = (props) => {
     const [active,setActive] = useState(null);
@@ -39,7 +40,7 @@ const Home = (props) => {
 
     if (!active) {
         return(
-            <p>Install Polkadot Extension</p>
+            <Front />
         )
     } else {
         return (
