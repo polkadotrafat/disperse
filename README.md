@@ -11,7 +11,7 @@ Demo Video :             [ No Audio ]
 Contract Address : ```XAPTQfpsddWDJ9kkkVBQjkchzHjpD9Bz4noneJmfBvTySC7``` [on Shibuya Testnet]
 ```YCgRauicmg5jjZioTojmD8KAKEzf9Jsz1DfZ1WZsdurQ1eG``` [on Shiden Network]
 
-Abis for both disperse and PSP22 token contracts are available in the abi folder and can be uploaded directly to another testnet of mainnet.
+Abis for both disperse and PSP22 token contracts are available in the abi folder and can be uploaded directly to another testnet or mainnet.
 
 MIT License
 
