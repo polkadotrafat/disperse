@@ -6,7 +6,7 @@ DAPP is live at https://famous-llama-2bd8e8.netlify.app
 
 Slides : https://docs.google.com/presentation/d/1iMBasWGsGutQSdDwc1XhFPmtathxhBF25aJJAfUU9KI/edit?usp=sharing
 
-Demo Video :             [ No Audio ]
+Demo Video :  https://vimeo.com/728534810           [ No Audio ]
 
 Contract Address : ```XAPTQfpsddWDJ9kkkVBQjkchzHjpD9Bz4noneJmfBvTySC7``` [on Shibuya Testnet]
 ```YCgRauicmg5jjZioTojmD8KAKEzf9Jsz1DfZ1WZsdurQ1eG``` [on Shiden Network]
