@@ -43,5 +43,5 @@ To batch together PSP22/ERC20 or equivalent tokens.
 
 ```pub fn disperse_token(&mut self,token_address: AccountId, addresses: Vec<AccountId>, values: Vec<Balance>)-> Result<(),Error>```
 
-token_address is the contract address of the PSP2220 contract. The other values are same as above.
+token_address is the contract address of the PSP22/ERC20 contract. The other values are same as above.
 
