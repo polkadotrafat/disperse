@@ -9,6 +9,7 @@ Slides : https://docs.google.com/presentation/d/1iMBasWGsGutQSdDwc1XhFPmtathxhBF
 Demo Video :             [ No Audio ]
 
 Contract Address : ```XAPTQfpsddWDJ9kkkVBQjkchzHjpD9Bz4noneJmfBvTySC7``` [on Shibuya Testnet]
+```YCgRauicmg5jjZioTojmD8KAKEzf9Jsz1DfZ1WZsdurQ1eG``` [on Shiden Network]
 
 MIT License
 
