@@ -2,7 +2,7 @@
 
 Disperse DAPP is a batching protocol for both native currency and PSP22/ERC20 or equivalent tokens that can help reduce gas cost for multiple transfers by batching them in a single block.
 
-DAPP is live at https://famous-llama-2bd8e8.netlify.app
+DAPP is live at https://famous-llama-2bd8e8.netlify.app [Currently live on Shibuya Testnet but I plan to add Shiden once more comprehensive tests are done. Contracts are available on Shiden]
 
 Slides : https://docs.google.com/presentation/d/1iMBasWGsGutQSdDwc1XhFPmtathxhBF25aJJAfUU9KI/edit?usp=sharing
 
