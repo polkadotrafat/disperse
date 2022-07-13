@@ -10,6 +10,7 @@ Demo Video :  https://vimeo.com/728534810           [ No Audio ]
 
 Contract Address : ```XAPTQfpsddWDJ9kkkVBQjkchzHjpD9Bz4noneJmfBvTySC7``` [on Shibuya Testnet]
 ```YCgRauicmg5jjZioTojmD8KAKEzf9Jsz1DfZ1WZsdurQ1eG``` [on Shiden Network]
+```5FS7LycuEgvur4mVag5RqZ48NKNrKazPZxZK11Pt5JmxjQ3F``` [on Rococo Contracts Network]
 
 Abis for both disperse and PSP22 token contracts are available in the abi folder and can be uploaded directly to another testnet or mainnet.
 
