@@ -6,6 +6,7 @@ import Front from "../components/Front";
 const Home = (props) => {
     const [active,setActive] = useState(null);
     const [sChoices,setSChoices] = useState([]);
+    const [sNetwork,setSNetwork] = useState([]);
     const navigate = useNavigate();
     const handleOnNative = useCallback(() => navigate('/native', {replace: true}), [navigate]);
     const handleOnTokens = useCallback(() => navigate('/tokens', {replace: true}), [navigate]);
@@ -38,6 +39,21 @@ const Home = (props) => {
         check_all();
     },[props.allAccounts])
 
+    const set_network = () => {
+        if (props?.NAME_NETWORK?.length > 0) {
+            let temp = [];
+            for ( let i = 0; i < props.NAME_NETWORK.length; ++i) {
+                let obj = {value: i, name: props.NAME_NETWORK[i]};
+                temp.push(obj);
+            }
+            setSNetwork(temp);
+        }
+    }
+
+    useEffect(() => {
+        set_network();
+    },[props.NAME_NETWORK])
+
     if (!active) {
         return(
             <Front />
@@ -59,11 +75,24 @@ const Home = (props) => {
                             <Card.Text>
                                 Balance : {props.balance}
                             </Card.Text>
+                            <Card.Text>
+                                Network : {props.networkName}
+                            </Card.Text>
+                            <Card.Text>
+                                RPC URL : {props.rpcURL}
+                            </Card.Text>
                             <Form.Label>
                                 Select Another Account
                             </Form.Label>
                             <Form.Select onChange={props.onHandleSelect}>
                                 {sChoices.map(choice => (<option value={choice.value}>{choice.name}</option>))}
+                            </Form.Select>
+                            <br />
+                            <Form.Label>
+                                Change Network
+                            </Form.Label>
+                            <Form.Select onChange={props.onHandleNetwork}>
+                                {sNetwork.map(network => (<option value={network.value}>{network.name}</option>))}
                             </Form.Select>
                             <br />
                             <Button variant="primary" onClick={handleOnNative}>Disperse Currency</Button>{'     '}

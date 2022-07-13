@@ -3,7 +3,6 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import { ContractPromise } from "@polkadot/api-contract";
 import {Container,Button,Row,Col,Form} from 'react-bootstrap';
 import tokenABI from "../contracts/token.json";
-import {DISPERSE_ADDRESS,RPC_URL} from "../assets/constants";
 import BigNumber from "bignumber.js";
 
 const Tokens = (props) => {
@@ -13,7 +12,9 @@ const Tokens = (props) => {
     const [disableApprove,setDisableApprove] = useState(false);
     const [addressArray,setAddressArray] = useState([]);
     const [amountArray, setAmountArray] = useState([]);
-    const [displayMessage,setDisplayMessage] = useState(null)
+    const [displayMessage,setDisplayMessage] = useState(null);
+
+    console.log(props.contractAddress);
 
     const ph = "Address1 Amount1\n"+
     "Address2,Amount2\n"+
@@ -30,7 +31,7 @@ const Tokens = (props) => {
     const handleApprove = async () => {
         let tempArray = textValue.valueOf().split(/[\s,;:\t\r\n]+/);
 
-        const wsProvider = new WsProvider(RPC_URL);
+        const wsProvider = new WsProvider(props.rpcURL);
         const api = await ApiPromise.create({ provider: wsProvider });
         const tokenContract = new ContractPromise(api, tokenABI, tokenAddress);
 
@@ -68,9 +69,9 @@ const Tokens = (props) => {
 
         const gasLimit = -1;
 
-        console.log(tokenContract);
+        console.log(props.disperseContract);
 
-        await tokenContract.tx["psp22::approve"]({gasLimit},DISPERSE_ADDRESS,allowance)
+        await tokenContract.tx["psp22::approve"]({gasLimit},props.contractAddress,allowance)
         .signAndSend(props.activeAccount.address,{signer: props.signer}, result => {
             if (result.status.isInBlock) {
                 setDisplayMessage("Transaction is In Block");

@@ -13,7 +13,7 @@ import {
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { ContractPromise } from "@polkadot/api-contract";
 import disperseABI from "./contracts/disperse.json";
-import {DISPERSE_ADDRESS,RPC_URL} from "./assets/constants";
+import {DISPERSE_ADDRESS_NETWORK,RPC_URL_NETWORK,NAME_NETWORK} from "./assets/constants";
 import {BigNumber} from "bignumber.js";
 
 
@@ -28,10 +28,13 @@ function App() {
   const [DisperseContract,setDisperseContract] = useState(null);
   const [accountBalance,setAccountBalance] = useState();
   const [signer,setSigner] = useState(null);
+  const [rpcURL,setRpcURL] = useState();
+  const [contractAddress,setContractAddress] = useState();
+  const [networkName,setNetworkName] = useState();
 
   console.log(allAccounts);
   //console.log("active: ",activeAccount.meta);
-  //console.log(DisperseContract);
+  console.log("contract",contractAddress);
   //console.log(signer);
 
   const walletInit = useCallback ( async () => {
@@ -43,6 +46,18 @@ function App() {
     }
     const temp = await web3Accounts();
     setAllAccounts(temp);
+
+    if (!rpcURL) {
+      setRpcURL(RPC_URL_NETWORK[0]);
+    }
+
+    if (!contractAddress) {
+      setContractAddress(DISPERSE_ADDRESS_NETWORK[0]);
+    }
+
+    if (!networkName) {
+      setNetworkName(NAME_NETWORK[0]);
+    }
 
     let unsubscribe; 
 
@@ -67,9 +82,9 @@ function App() {
 
   const setUp = async () => {
     if (activeAccount) {
-      const wsProvider = new WsProvider(RPC_URL);
+      const wsProvider = new WsProvider(rpcURL);
       const api = await ApiPromise.create({ provider: wsProvider });
-      const contract2 = new ContractPromise(api, disperseABI, DISPERSE_ADDRESS);
+      const contract2 = new ContractPromise(api, disperseABI, contractAddress);
       const {data: balance, nonce} = await api.query.system.account(activeAccount.address);
       const cd = await api.registry.chainDecimals;
       let x = new BigNumber(balance.free);
@@ -87,12 +102,20 @@ function App() {
 
   useEffect(() => {
     setUp();
-  },[activeAccount])
+  },[activeAccount,rpcURL,contractAddress])
 
   const onHandleSelect = (e) => {
     e.preventDefault();
     console.log("ETAR",e.target.value);
     setActiveAccount(allAccounts[e.target.value]);
+  }
+
+  const onHandleNetwork = (e) => {
+    e.preventDefault();
+    console.log("ETAR",e.target.value);
+    setRpcURL(RPC_URL_NETWORK[e.target.value]);
+    setContractAddress(DISPERSE_ADDRESS_NETWORK[e.target.value]);
+    setNetworkName(NAME_NETWORK[e.target.value]);
   }
 
   return (
@@ -104,16 +127,23 @@ function App() {
         allAccounts={allAccounts}
         onHandleSelect={onHandleSelect}
         balance={accountBalance}
+        onHandleNetwork={onHandleNetwork}
+        rpcURL={rpcURL}
+        networkName={networkName}
+        NAME_NETWORK={NAME_NETWORK}
         />}
          />
         <Route path="/tokens" element={<Tokens 
         activeAccount={activeAccount} 
         signer={signer}
+        rpcURL={rpcURL}
+        contractAddress={contractAddress}
         disperseContract={DisperseContract}
         />} />
         <Route path="/native" element={<Native 
         activeAccount={activeAccount}
         signer={signer}
+        rpcURL={rpcURL}
         disperseContract={DisperseContract}
         balance={accountBalance}
          />} />

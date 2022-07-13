@@ -1,7 +1,6 @@
 import React,{useState} from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import {Container,Button,Row,Col,Form} from 'react-bootstrap';
-import {RPC_URL} from "../assets/constants";
 import {BigNumber} from "bignumber.js";
 
 const Native = (props) => {
@@ -15,7 +14,7 @@ const Native = (props) => {
 
 
     const handleClick = async () => {
-        const wsProvider = new WsProvider(RPC_URL);
+        const wsProvider = new WsProvider(props.rpcURL);
         const api = await ApiPromise.create({ provider: wsProvider });
         let tempArray = textValue.valueOf().split(/[\s,;:\t\r\n]+/);
 
